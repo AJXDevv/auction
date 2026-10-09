@@ -55,8 +55,8 @@ public class Auction
     {
         Lot selectedLot = getLot(lotNumber);
         if(selectedLot != null) {
-            Bid aBid = new Bid(bidder, value);
-            boolean successful = selectedLot.bidFor(aBid);
+            //question 2
+            boolean successful = selectedLot.bidFor(new Bid(bidder,value));
             if(successful) {
                 System.out.println("The bid for lot number " +
                                    lotNumber + " was successful.");
@@ -71,34 +71,57 @@ public class Auction
         }
     }
 
-    /**
-     * Return the lot with the given number. Return null if a lot with this 
-     * number does not exist.
-     * @param lotNumber The number of the lot to return.
-     * @return The lot with the given number, or null.
-     */
+    //question 6
     public Lot getLot(int lotNumber)
     {
-        if((lotNumber >= 1) && (lotNumber < nextLotNumber)) {
-            // The number seems to be reasonable.
-            Lot selectedLot = listOfLots.get(lotNumber - 1);
-            // Include a confidence check to be sure we have the
-            // right lot.
-            if(selectedLot.getNumber() != lotNumber) {
-                System.out.println("Internal error: Lot number " +
-                                   selectedLot.getNumber() +
-                                   " was returned instead of " +
-                                   lotNumber);
-                // Don't return an invalid lot.
-                selectedLot = null;
+        for (Lot aLot : listOfLots) {
+            if (aLot.getNumber() == lotNumber) {
+                return aLot;
             }
-            return selectedLot;
         }
-        else {
-            System.out.println("Lot number: " + lotNumber +
-                               " does not exist.");
-            return null;
-        }
+        System.out.println("Lot number: " + lotNumber +
+                           " does not exist.");
+        return null;
     }
-}
 
+    //question 3
+    public void close() {
+        for (Lot aLot : listOfLots) {
+            Bid highest = aLot.getHighestBid();
+            
+            if (highest == null) {
+                System.out.println("Lot " + aLot.getNumber() + ": There were no bids for this lot.");
+            } else {
+                System.out.println("Lot " + aLot.getNumber() + ": Sold to " + 
+                                   highest.getBidder().getName() + " for " + 
+                                   highest.getValue());
+            }
+        }
+    }   
+
+    //question 4
+    public ArrayList<Lot> getUnsold() {
+        ArrayList<Lot> unsoldLots = new ArrayList<>();
+        for (Lot aLot : listOfLots) {
+            if (aLot.getHighestBid() == null) {
+                unsoldLots.add(aLot);
+            }
+        }
+        return unsoldLots;
+    }
+
+    //question 7
+    public Lot removeLot(int number) {
+        Lot foundLot = getLot(number);
+        if (foundLot != null) {
+            listOfLots.remove(foundLot);
+        }
+        return foundLot;
+    }
+} 
+//question 5
+// Removing a lot shifts items left. The calculation (lotNumber - 1) will now look at the wrong index and return the wrong lot or cause a crash.
+
+//question 8
+// Common methods: add, remove, clear, size, get, isEmpty.
+// Different methods: LinkedList has addfirst, addlast, removefirst, removelast. ArrayList does not.
